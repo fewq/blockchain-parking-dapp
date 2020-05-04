@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Parking DApp</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+        <!-- Required bootstrap meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <!-- Fontawesome for icons -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+        <!-- Internal CSS -->
+        <style>
+          owner {visibility: visible;}
+          driver {visibility: visible;}
+          body { background: #1D57A6;}
+          .list-group-item{padding-top: 0.25rem; padding-bottom: 0.25rem;}
+        </style>
+      </head>
+
+
+  <body>
+    <div class="container" style="background: #BDC3C7;">
+
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
+        <a class="navbar-brand" href="#"><i class="fas fa-parking" style="color:#1D57A6"></i> Parking DApp <i class="fab fa-ethereum"></i></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul id="navbar" class="navbar-nav">
+            <li id="owner_nav" class="nav-item">
+              <a class="nav-link" href="#">Owner</a>
+            </li>
+            <li id="driver_nav" class="nav-item">
+              <a class="nav-link" href="#">Driver</a>
+            </li>
+            <li id="dev_nav" class="nav-item active">
+              <a class="nav-link" href="#">Developer</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Get contract details -->
+      <div style="padding-bottom: 1em; padding-top: 1em;">
+        <ul class="list-group">
+          <nav class="navbar navbar-light bg-light">
+            <span class="navbar-brand mb-0 h1">Contract details: </span>
+          </nav>
+          <li class="list-group-item">Physical address: <span id="physical_address_span"></span></li>
+          <li class="list-group-item">Deposit: <span id="deposit_span"></span> ether</li>
+          <li class="list-group-item">Fee: <span id="fee_span"></span> ether</li>
+        </ul>
+        <button id="get_contract_details_btn" type="button" class="btn btn-primary">Get contract details</button>
+      </div>
+
+      <!-- Get state -->
+      <div style="padding-bottom: 1em;">
+        <nav class="navbar navbar-light bg-light">
+          <span class="navbar-brand mb-0 h1">State: </span>
+        </nav>
+        <ul id="state_bar" class="list-group">
+          <li id="state_0" class="list-group-item">Available</li>
+          <li id="state_1" class="list-group-item">Need owner verification</li>
+          <li id="state_2" class="list-group-item">Ready to start</li>
+          <li id="state_3" class="list-group-item">In use</li>
+          <li id="state_4" class="list-group-item">Request to end</li>
+        </ul>
+        <button id="get_state_btn" type="button" class="btn btn-primary">Get state</button>
+      </div>
+
+
+      <div class="btn-group-vertical" style="padding-bottom: 1em;">
+        <!-- challenge owner -->
+          <button id="challenge_owner" type="button" class="btn btn-primary driver">Challenge owner</button>
+        <!-- complete challenge -->
+          <button id="complete_challenge" type="button" class="btn btn-primary owner">Complete challenge</button>
+        <!-- start parking -->
+          <button id="start_parking" type="button" class="btn btn-primary driver">Start parking</button>
+        <!-- request end parking -->
+          <button id="request_end_parking" type="button" class="btn btn-primary driver">Request end parking</button>
+        <!-- approve end parking -->
+          <button id="approve_end_parking" type="button" class="btn btn-primary owner">Approve end parking</button>
+      </div>
+
+      <!-- change deposit -->
+      <div class="input-group mb-3 owner">
+        <input id="new_deposit" type="text" class="form-control" placeholder="Enter new deposit amount">
+        <div class="input-group-append">
+          <span class="input-group-text">wei</span>
+          <button id="change_deposit" class="btn btn-primary" type="button" id="button-addon2">Change</button>
+        </div>
+      </div>
+
+      <!-- change fee -->
+      <div class="input-group mb-3 owner" style="padding-bottom: 1em;">
+        <input id="new_fee" type="text" class="form-control" placeholder="Enter new fee">
+        <div class="input-group-append">
+          <span class="input-group-text">wei</span>
+          <button id="change_fee" class="btn btn-primary" type="button" id="button-addon2">Change</button>
+        </div>
+      </div>
+
+    </div>
+
+    
+    <!-- Optional JavaScript for bootstrap -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  
+    <!-- Actual script to run app -->
+    <script lang="javascript">
+      $(document).ready(function() {
+        // local variables
+        var contract;
+        var physical_address;
+        var deposit;
+        var fee;
+
+          // get state helper
+          function get_state_helper(){
+            contractInstance.get_state(function(error, result){
+              if (error) {
+                  console.log(error)
+                  reject(error);
+              }else{
+                var state_int = parseInt(result)
+                var state_string = state_int.toString()
+                console.log("State: "+state_string)
+                $("#state_bar").children().removeClass("active")
+                $("#state_"+state_string).addClass("active")
+              }
+            })
+          }
+
+          // check that web3 has been injected by the browser (Metamask)
+          if (typeof web3 !== 'undefined') {
+              var sc_address = "{{contractAddress}}";
+              var contractABI = web3.eth.contract(JSON.parse('{{contractABI | safe}}'));
+              var contractInstance = contractABI.at(sc_address);
+              current_account = web3.eth.accounts[0];
+
+              // OLD FUNCTION
+              $("a#call_join").click(function(){
+                // helper function to get current account
+                function getAccount(callback) {
+                    web3.eth.getAccounts((error,result) => {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            callback(result[0]);
+                        }
+                    });
+                }
+                var current_account
+                getAccount(function(result) {
+                    console.log(result)
+                    current_account = result
+                });
+                console.log(current_account)
+                contractInstance.join({from:current_account, value:1000000000000000000}, function(error, result){
+                  console.log(error)
+                  if (error) {
+                      alert("Please connect to the network");
+                      reject(error);
+                  }else{
+                    console.log("joined!")
+                    $("#flip_result").text("joined!");
+                  }
+                });
+            });
+            // END OF OLD FUNCTION
+
+            // handle get contract details
+            $("#get_contract_details_btn").click(function(){
+                contractInstance.get_contract_details(function(error, result){
+                  if (error) {
+                      alert("Please connect to the network");
+                      reject(error);
+                  }else{
+                    console.log(result)
+                    physical_address = result[0]
+                    deposit = result[1]
+                    fee = result[2]
+                    $("#physical_address_span").text(physical_address);
+                    $("#deposit_span").text(deposit/10**18);
+                    $("#fee_span").text(fee/10**18);
+                  }
+                });
+            });
+
+            // handle get state
+            $("#get_state_btn").click(function(){
+                get_state_helper()
+            });
+
+            // handle challenge owner
+            $("#challenge_owner").click(function(){
+                contractInstance.challenge({from:web3.eth.accounts[0]}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("challenged owner")
+                  }
+                })
+            });
+
+            // handle complete challenge
+            $("#complete_challenge").click(function(){
+                contractInstance.complete_challenge({from:web3.eth.accounts[0]}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("complete challenge")
+                  }
+                });
+            });
+
+            // handle start parking
+            $("#start_parking").click(function(){
+                console.log(deposit)
+                if(deposit==undefined){
+                  alert("Please get and read the contract details first")
+                }
+                contractInstance.start_parking({from:web3.eth.accounts[0], value:deposit}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("start parking")
+                  }
+                });
+            });
+
+            // handle request end parking
+            $("#request_end_parking").click(function(){
+                contractInstance.request_end_parking({from:web3.eth.accounts[0]}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("requested end parking")
+                  }
+                });
+            });
+
+            // handle approve end parking
+            $("#approve_end_parking").click(function(){
+                contractInstance.approve_end_parking({from:web3.eth.accounts[0]}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("approved end parking")
+                  }
+                });
+            });
+
+            // handle change deposit
+            $("#change_deposit").click(function(){
+                var new_deposit = $("#new_deposit").val();
+                console.log(new_deposit)
+                contractInstance.change_deposit(new_deposit, {from:web3.eth.accounts[0]}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("changed deposit")
+                  }
+                });
+            });
+
+            // handle change fee
+            $("#change_fee").click(function(){
+                var new_fee = $("#new_fee").val();
+                console.log(new_deposit)
+                contractInstance.change_fee(new_fee, {from:web3.eth.accounts[0]}, function(error, result){
+                  if (error) {
+                      console.log(error)
+                  }else{
+                    console.log("changed fee")
+                  }
+                });
+            });
+
+            // owner "page"
+            $("#owner_nav").click(function(){
+              $(".owner" ).show();
+              $(".driver" ).hide();
+              $("#navbar").children().removeClass("active")
+              $("#owner_nav").addClass("active")
+            });
+
+            // driver "page"
+            $("#driver_nav").click(function(){
+              $(".driver" ).show();
+              $(".owner" ).hide();
+              $("#navbar").children().removeClass("active")
+              $("#driver_nav").addClass("active")
+            });
+
+            // developer "page"
+            $("#dev_nav").click(function(){
+              $(".owner" ).show();
+              $(".driver" ).show();
+              $("#navbar").children().removeClass("active")
+              $("#dev_nav").addClass("active")
+            });
+
+          }
+          // shows alert if metamask is not installed 
+          else {
+              alert("Please, install Metamask!");
+          }
+      });
+    </script>
+  </body>
+
+
+</html>
